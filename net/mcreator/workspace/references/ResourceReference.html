@@ -75,6 +75,11 @@ loadScripts(document, 'script');</script>
 <div class="block">Used to mark fields storing names of resources used by mod element instance.
 For textures, <a href="TextureReference.html" title="annotation interface in net.mcreator.workspace.references"><code>TextureReference</code></a> should be used instead as it also declares the texture type.
 <br>Regular Model and Sound references using Model or Sound object do not need this annotation additionally.</div>
+<dl class="notes">
+<dt>API note:</dt>
+<dd>This annotation can also be added to fields of type <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link"><code>Collection</code></a>, custom object, etc.
+with their values known to match or have fields/methods with matching values.</dd>
+</dl>
 </div>
 </section>
 <section class="summary">

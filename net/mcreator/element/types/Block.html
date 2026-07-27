@@ -134,8 +134,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#jumpFactor" tabindex="0">jumpFactor</a></li>
 <li><a href="#reactionToPushing" tabindex="0">reactionToPushing</a></li>
 <li><a href="#isNotColidable" tabindex="0">isNotColidable</a></li>
-<li><a href="#isCustomSoundType" tabindex="0">isCustomSoundType</a></li>
 <li><a href="#soundOnStep" tabindex="0">soundOnStep</a></li>
+<li><a href="#isCustomSoundType" tabindex="0">isCustomSoundType</a></li>
 <li><a href="#breakSound" tabindex="0">breakSound</a></li>
 <li><a href="#fallSound" tabindex="0">fallSound</a></li>
 <li><a href="#hitSound" tabindex="0">hitSound</a></li>
@@ -898,7 +898,7 @@ element resources for cases such as GUI mod element</div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-net.mcreator.element.GeneratableElement">Methods inherited from class&nbsp;<a href="../GeneratableElement.html#method-summary" title="class in net.mcreator.element">GeneratableElement</a></h3>
-<code><a href="../GeneratableElement.html#getAdditionalTemplateData()" title="getAdditionalTemplateData()">getAdditionalTemplateData</a>, <a href="../GeneratableElement.html#getModElement()" title="getModElement()">getModElement</a>, <a href="../GeneratableElement.html#isDataModelObject(java.lang.Object)" title="isDataModelObject(Object)">isDataModelObject</a>, <a href="../GeneratableElement.html#isUnknown()" title="isUnknown()">isUnknown</a>, <a href="../GeneratableElement.html#setModElement(net.mcreator.workspace.elements.ModElement)" title="setModElement(ModElement)">setModElement</a>, <a href="../GeneratableElement.html#wasConversionApplied()" title="wasConversionApplied()">wasConversionApplied</a></code></div>
+<code><a href="../GeneratableElement.html#getAdditionalTemplateData()" title="getAdditionalTemplateData()">getAdditionalTemplateData</a>, <a href="../GeneratableElement.html#getModElement()" title="getModElement()">getModElement</a>, <a href="../GeneratableElement.html#isDataModelObject(java.lang.Class)" title="isDataModelObject(Class)">isDataModelObject</a>, <a href="../GeneratableElement.html#isUnknown()" title="isUnknown()">isUnknown</a>, <a href="../GeneratableElement.html#setModElement(net.mcreator.workspace.elements.ModElement)" title="setModElement(ModElement)">setModElement</a>, <a href="../GeneratableElement.html#wasConversionApplied()" title="wasConversionApplied()">wasConversionApplied</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#method-summary" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -1042,7 +1042,8 @@ element resources for cases such as GUI mod element</div>
 <section class="detail" id="itemTexture">
 <h3>itemTexture</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../parts/TextureHolder.html" title="class in net.mcreator.element.parts">TextureHolder</a></span>&nbsp;<span class="element-name">itemTexture</span></div>
+<div class="member-signature"><span class="annotations">@Nullable
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../parts/TextureHolder.html" title="class in net.mcreator.element.parts">TextureHolder</a></span>&nbsp;<span class="element-name">itemTexture</span></div>
 </div>
 </section>
 </li>
@@ -1050,7 +1051,8 @@ element resources for cases such as GUI mod element</div>
 <section class="detail" id="particleTexture">
 <h3>particleTexture</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../parts/TextureHolder.html" title="class in net.mcreator.element.parts">TextureHolder</a></span>&nbsp;<span class="element-name">particleTexture</span></div>
+<div class="member-signature"><span class="annotations">@Nullable
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../parts/TextureHolder.html" title="class in net.mcreator.element.parts">TextureHolder</a></span>&nbsp;<span class="element-name">particleTexture</span></div>
 </div>
 </section>
 </li>
@@ -1529,18 +1531,18 @@ element resources for cases such as GUI mod element</div>
 </section>
 </li>
 <li>
-<section class="detail" id="isCustomSoundType">
-<h3>isCustomSoundType</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCustomSoundType</span></div>
-</div>
-</section>
-</li>
-<li>
 <section class="detail" id="soundOnStep">
 <h3>soundOnStep</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../parts/StepSound.html" title="class in net.mcreator.element.parts">StepSound</a></span>&nbsp;<span class="element-name">soundOnStep</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isCustomSoundType">
+<h3>isCustomSoundType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCustomSoundType</span></div>
 </div>
 </section>
 </li>
