@@ -20,67 +20,49 @@
 package net.mcreator.ui.chromium;
 
 import net.mcreator.plugin.PluginLoader;
-import net.mcreator.ui.MCreator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cef.browser.CefBrowser;
-import org.cef.browser.CefFrame;
 import org.cef.callback.CefCallback;
+import org.cef.callback.CefResourceReadCallback;
+import org.cef.callback.CefResourceSkipCallback;
 import org.cef.handler.CefResourceHandler;
+import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
+import org.cef.misc.LongRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Objects;
 
 public class MCreatorSchemeHandler implements CefResourceHandler {
 
 	private static final Logger LOG = LogManager.getLogger(MCreatorSchemeHandler.class);
 
-	private static final List<RequestHandler> REQUEST_HANDLERS = new CopyOnWriteArrayList<>();
+	private final List<RequestHandler> requestHandlers;
 
 	private InputStream inputStream;
 	private String contentType;
 
-	private final CefBrowser browser;
+	private volatile boolean cancelled = false;
 
-	/**
-	 * Registers an additional request handler that is queried before the default class-loader-based resource
-	 * lookup. Handlers are queried in registration order, and the first one to return a non-null stream wins.
-	 *
-	 * @param handler The request handler to register.
-	 */
-	public static void registerRequestHandler(RequestHandler handler) {
-		REQUEST_HANDLERS.add(handler);
-	}
-
-	@SuppressWarnings("unused")
-	public MCreatorSchemeHandler(CefBrowser browser, CefFrame frame, String schemeName, CefRequest request) {
-		this.browser = browser;
-	}
-
-	/**
-	 * @return The MCreator instance the WebView holding the CefBrowser this handler serves is part of,
-	 * or null if it can't be determined.
-	 */
-	@SuppressWarnings("resource") @Nullable public MCreator getMCreator() {
-		WebView webView = WebView.fromBrowser(browser);
-		return webView != null ? webView.getMCreator() : null;
+	public MCreatorSchemeHandler(List<RequestHandler> customRequestHandlers) {
+		requestHandlers = Objects.requireNonNullElseGet(customRequestHandlers, List::of);
 	}
 
 	@Override public boolean processRequest(CefRequest request, CefCallback callback) {
+		return open(request, new BoolRef(), callback);
+	}
+
+	@Override public boolean open(CefRequest request, BoolRef handleRequest, CefCallback callback) {
 		String path = request.getURL().replaceFirst("^http://mcreator/", "/");
 
-		MCreator mcreator = getMCreator();
-
 		// Give registered request handlers a chance to rewrite the request path
-		for (RequestHandler handler : REQUEST_HANDLERS) {
-			path = handler.rewritePath(mcreator, path);
+		for (RequestHandler handler : requestHandlers) {
+			path = handler.rewritePath(path);
 		}
 
 		if (path.contains("favicon.ico")) {
@@ -88,9 +70,9 @@ public class MCreatorSchemeHandler implements CefResourceHandler {
 			inputStream = InputStream.nullInputStream();
 		} else {
 			// First, give registered request handlers a chance to handle the request
-			for (RequestHandler handler : REQUEST_HANDLERS) {
+			for (RequestHandler handler : requestHandlers) {
 				try {
-					InputStream handlerStream = handler.handleRequest(mcreator, path);
+					InputStream handlerStream = handler.handleRequest(path);
 					if (handlerStream != null) {
 						inputStream = handlerStream;
 						break;
@@ -125,6 +107,13 @@ public class MCreatorSchemeHandler implements CefResourceHandler {
 	}
 
 	@Override public boolean readResponse(byte[] dataOut, int bytesToRead, IntRef bytesRead, CefCallback callback) {
+		return read(dataOut, bytesToRead, bytesRead, null);
+	}
+
+	@Override public boolean read(byte[] dataOut, int bytesToRead, IntRef bytesRead, CefResourceReadCallback callback) {
+		if (cancelled)
+			return false;
+
 		try {
 			int n = inputStream.read(dataOut, 0, bytesToRead);
 			if (n == -1) {
@@ -134,13 +123,33 @@ public class MCreatorSchemeHandler implements CefResourceHandler {
 			bytesRead.set(n);
 			return true;
 		} catch (IOException e) {
-			LOG.warn("Error reading resource: {}", e.getMessage());
+			if (!cancelled)
+				LOG.warn("Error reading resource: {}", e.getMessage());
 			closeStream();
 			return false;
 		}
 	}
 
+	@Override public boolean skip(long bytesToSkip, LongRef bytesSkipped, CefResourceSkipCallback callback) {
+		if (cancelled) {
+			bytesSkipped.set(-2);
+			return false;
+		}
+
+		try {
+			inputStream.skipNBytes(bytesToSkip);
+			bytesSkipped.set(bytesToSkip);
+			return true;
+		} catch (IOException e) {
+			if (!cancelled)
+				LOG.warn("Error skipping resource: {}", e.getMessage());
+			bytesSkipped.set(-2);
+			return false;
+		}
+	}
+
 	@Override public void cancel() {
+		cancelled = true;
 		closeStream();
 	}
 
@@ -163,38 +172,13 @@ public class MCreatorSchemeHandler implements CefResourceHandler {
 			case "ttf" -> "application/octet-stream";
 			case "png" -> "image/png";
 			case "jpeg" -> "image/jpeg";
+			case "svg" -> "image/svg+xml";
 			case "css" -> "text/css";
 			case "js" -> "text/javascript";
 			case "html" -> "text/html";
 			case "cur" -> "image/x-icon";
 			default -> "text/plain";
 		};
-	}
-
-	public interface RequestHandler {
-
-		/**
-		 * Called for each request before resource resolution, allowing the handler to rewrite the request path.
-		 * Rewrites of all registered handlers are chained in registration order.
-		 *
-		 * @param mcreator The MCreator instance the WebView making the request belongs to, or null if unknown.
-		 * @param path     The requested resource path (e.g. /blockly/blockly.html), potentially already
-		 *                 rewritten by previously registered handlers.
-		 * @return The rewritten path, or the passed path unchanged if this handler does not rewrite it.
-		 */
-		default String rewritePath(@Nullable MCreator mcreator, String path) {
-			return path;
-		}
-
-		/**
-		 * Called for each request before the default class loader based resource lookup.
-		 *
-		 * @param mcreator The MCreator instance the WebView making the request belongs to, or null if unknown.
-		 * @param path     The requested resource path (e.g. /blockly/blockly.html).
-		 * @return Stream with the resource contents, or null to pass processing back to the default handler.
-		 * @throws Exception If the request handling fails. The request is then passed to the remaining handlers.
-		 */
-		@Nullable InputStream handleRequest(@Nullable MCreator mcreator, String path) throws Exception;
 	}
 
 }
