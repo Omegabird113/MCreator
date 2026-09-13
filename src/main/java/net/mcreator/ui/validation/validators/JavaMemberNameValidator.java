@@ -31,18 +31,21 @@ import java.util.Set;
 public class JavaMemberNameValidator implements Validator {
 
 	private final VTextField textField;
-	private final boolean firstLetterUppercase;
-	private final boolean allowInitialUnderscore;
+	private boolean firstLetterUppercase;
+	private boolean allowInitialUnderscore = true;
 
-	public JavaMemberNameValidator(VTextField textField, boolean requireFirstLetterUppercase) {
-		this(textField, requireFirstLetterUppercase, true);
+	public JavaMemberNameValidator(VTextField textField) {
+		this.textField = textField;
 	}
 
-	public JavaMemberNameValidator(VTextField textField, boolean requireFirstLetterUppercase,
-			boolean allowInitialUnderscore) {
-		this.textField = textField;
-		this.firstLetterUppercase = requireFirstLetterUppercase;
-		this.allowInitialUnderscore = allowInitialUnderscore;
+	public JavaMemberNameValidator firstLetterUppercase() {
+		this.firstLetterUppercase = true;
+		return this;
+	}
+
+	public JavaMemberNameValidator noInitialUnderscore() {
+		this.allowInitialUnderscore = false;
+		return this;
 	}
 
 	@Override public ValidationResult validate() {
@@ -88,6 +91,6 @@ public class JavaMemberNameValidator implements Validator {
 			"FenceGate", "Creature", "Item", "Block", "BoneMeal", "Diamond", "Ore", "Gem", "Gold", "Iron", "Stack",
 			"Emerald", "Entity", "Surface", "WoodButton", "StoneButton", "Flower", "Falling", "Furnace", "Bush", "Crop",
 			"Structure", "Blocks", "Items", "Biomes", "Timer", "Direction", "Number", "Tool", "Console", "HangingSign",
-			"WanderingTrader");
+			"WanderingTrader", "Level", "Player", "ItemStack", "BlockState", "BlockPos", "Minecraft", "Math");
 
 }
